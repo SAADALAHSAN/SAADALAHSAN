@@ -2,22 +2,22 @@
 
 <br />
 <img src="https://user-images.githubusercontent.com/18350557/176309783-0785949b-9127-417c-8b55-ab5a4333674e.gif" width="40" />
-<h1>Hi, I'm Sizar</h1>
+<h1>Hi, I'm Saad</h1>
 <p><b>Full-Stack Product Builder | Passionate about Web3 & AI.</b></p>
 
 ### 🌐 Connect & Portfolio
 <br />
 
-<a href="https://sizar.devnames.com" target="_blank">
+<a href="https://saad.devnames.com" target="_blank">
 <img src="https://img.shields.io/badge/%20Website-6E56CF?style=for-the-badge&logo=googlechrome&logoColor=white" alt="Website" />
 </a>
-<a href="https://x.com/gmstree" target="_blank">
+<a href="https://x.com/SaadAl_Ahsan" target="_blank">
 <img src="https://img.shields.io/badge/-000000?style=for-the-badge&logo=x&logoColor=white" alt="X" />
 </a>
-<a href="https://linkedin.com/in/sizar-in" target="_blank">
+<a href="https://www.linkedin.com/in/saad-al-ahsan" target="_blank">
 <img src="https://img.shields.io/badge/LinkedIn-0077B5?style=for-the-badge&logo=linkedin&logoColor=white" alt="LinkedIn" />
 </a>
-<a href="mailto:sizar.web@gmail.com">
+<a href="mailto:saadalahsanmain@gmail.com">
 <img src="https://img.shields.io/badge/Email-D14836?style=for-the-badge&logo=gmail&logoColor=white" alt="Email" />
 </a>
 
