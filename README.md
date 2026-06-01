@@ -29,14 +29,27 @@
 
 ---
 
+---
+
+<div align="center">
+
 ### ⚡ About Me
 
 I am a **Computer Science & Engineering student** and a **Web3 Entrepreneur** who loves building highly scalable decentralized products from scratch. Combining strong technical architecture with sharp financial market insights, I bridge the gap between code and ecosystem growth.
 
-*   🚀 **Entrepreneurship**: Co-founder & Product Lead at multiple Web3 startups, specializing in decentralized applications, liquidity automation, and ecosystem building.
-*   📊 **Trading & Markets**: 4+ years of active experience in Crypto and Forex trading. Currently acting as a strategic Listing Partner & Manager for top-tier digital asset exchanges (MEXC, LBank, Coinstore).
-*   🤖 **AI & Automation**: Building specialized automation agents, custom infrastructure tools, and leveraging LLM workflows to streamline Web3 on-chain operations.
-*   🎤 **Leadership**: Active tech community speaker and currently serving as the President of the Southeast Debate Club, blending technical depth with strong communication.
+<br />
+
+🚀 **Entrepreneurship**: Co-founder & Product Lead at multiple Web3 startups, specializing in decentralized applications, liquidity automation, and ecosystem building.
+
+📊 **Trading & Markets**: 4+ years of active experience in Crypto and Forex trading. Currently acting as a strategic Listing Partner & Manager for top-tier digital asset exchanges (MEXC, LBank, Coinstore).
+
+🤖 **AI & Automation**: Building specialized automation agents, custom infrastructure tools, and leveraging LLM workflows to streamline Web3 on-chain operations.
+
+🎤 **Leadership**: Active tech community speaker and currently serving as the President of the Southeast Debate Club, blending technical depth with strong communication.
+
+</div>
+
+---
 
 ---
 
