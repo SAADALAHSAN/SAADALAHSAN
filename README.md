@@ -1,13 +1,9 @@
-<table border="0" width="100%" cellspacing="0" cellpadding="0">
-  <tr valign="middle">
-    <td width="46%" align="center">
-      <img src="https://raw.githubusercontent.com/SAADALAHSAN/SAADALAHSAN/main/coding_sticker.gif?v=12" width="100%" style="border-radius: 15px;">
-    </td>
-    <td width="54%" align="center">
-      <img src="https://raw.githubusercontent.com/SAADALAHSAN/SAADALAHSAN/main/profile_card.svg?v=12" width="100%">
-    </td>
-  </tr>
-</table>
+<a href="https://github.com/SAADALAHSAN/SAADALAHSAN">
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/SAADALAHSAN/SAADALAHSAN/main/profile_card.svg?v=10">
+    <img alt="SAAD AL AHSAN's GitHub Profile README" src="https://raw.githubusercontent.com/SAADALAHSAN/SAADALAHSAN/main/profile_card.svg?v=10">
+  </picture>
+</a>
 
 
 ## 🌐 Socials:

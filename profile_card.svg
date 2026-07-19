@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='UTF-8'?>
-<svg xmlns="http://www.w3.org/2000/svg" font-family="ConsolasFallback,Consolas,monospace" width="520px" height="500px" font-size="15px">
+<svg xmlns="http://www.w3.org/2000/svg" font-family="ConsolasFallback,Consolas,monospace" width="985px" height="530px" font-size="16px">
 <style>
 @font-face {
 src: local('Consolas'), local('Consolas Bold');
@@ -15,27 +15,58 @@ size-adjust: 109%;
 .cc {fill: #616e7f;}
 text, tspan {white-space: pre;}
 </style>
-<rect width="520px" height="500px" fill="#161b22" rx="15"/>
-
-<!-- Terminal Profile Details -->
-<text x="20" y="35" fill="#c9d1d9">
-<tspan x="20" y="35">saad@ahsan</tspan> -—————————————————————————————————-—-
-<tspan x="20" y="60" class="cc">. </tspan><tspan class="key">OS</tspan>:<tspan class="cc"> ...................... </tspan><tspan class="value">Windows 10, Linux</tspan>
-<tspan x="20" y="85" class="cc">. </tspan><tspan class="key">Uptime</tspan>:<tspan class="cc"> .................. </tspan><tspan class="value">Learner since day 1</tspan>
-<tspan x="20" y="110" class="cc">. </tspan><tspan class="key">Role</tspan>:<tspan class="cc"> .................... </tspan><tspan class="value">Full-Stack Product Builder</tspan>
-<tspan x="20" y="135" class="cc">. </tspan><tspan class="key">Focus</tspan>:<tspan class="cc"> ........... </tspan><tspan class="value">Trading, Web3, AI Automation</tspan>
-<tspan x="20" y="160" class="cc">. </tspan><tspan class="key">IDE</tspan>:<tspan class="cc"> ...................... </tspan><tspan class="value">VSCode, Cursor</tspan>
-<tspan x="20" y="185" class="cc">. </tspan>
-<tspan x="20" y="210" class="cc">. </tspan><tspan class="key">Languages</tspan>.<tspan class="key">Programming</tspan>:<tspan class="cc"> .. </tspan><tspan class="value">JS, TS, Python, Rust, C++</tspan>
-<tspan x="20" y="235" class="cc">. </tspan><tspan class="key">Languages</tspan>.<tspan class="key">Markup</tspan>:<tspan class="cc"> ......... </tspan><tspan class="value">HTML, CSS, JSON, YAML</tspan>
-<tspan x="20" y="260" class="cc">. </tspan><tspan class="key">Languages</tspan>.<tspan class="key">Real</tspan>:<tspan class="cc"> ..................... </tspan><tspan class="value">Bangla, English</tspan>
-<tspan x="20" y="285" class="cc">. </tspan>
-<tspan x="20" y="310" class="cc">. </tspan><tspan class="key">Frameworks</tspan>:<tspan class="cc"> ............. </tspan><tspan class="value">React, Next.js, Node.js, Vite</tspan>
-<tspan x="20" y="335" class="cc">. </tspan><tspan class="key">Databases</tspan>:<tspan class="cc"> .............. </tspan><tspan class="value">MongoDB, MySQL, Firebase</tspan>
-<tspan x="20" y="360" class="cc">. </tspan><tspan class="key">Cloud</tspan>:<tspan class="cc"> ................... </tspan><tspan class="value">AWS, GCP, Azure, Vercel</tspan>
-<tspan x="20" y="385" class="cc">. </tspan><tspan class="key">Web3</tspan>:<tspan class="cc"> .... </tspan><tspan class="value">Ethereum, Solana, Polygon, Hardhat</tspan>
-<tspan x="20" y="415">- Contact</tspan> -————————————————————————————————-—-
-<tspan x="20" y="440" class="cc">. </tspan><tspan class="key">Email</tspan>:<tspan class="cc"> ........................... </tspan><tspan class="value">dinerahmed476@gmail.com</tspan>
-<tspan x="20" y="465" class="cc">. </tspan><tspan class="key">LinkedIn</tspan>:<tspan class="cc"> ........................ </tspan><tspan class="value">diner-ahmed</tspan>
+<rect width="985px" height="530px" fill="#161b22" rx="15"/>
+<text x="15" y="30" fill="#c9d1d9" class="ascii">
+<tspan x="15" y="30">           g@M%@%%@N%Nw,,                   </tspan>
+<tspan x="15" y="50">        ,M*|`||*%gNM=]mM%g||%N,             </tspan>
+<tspan x="15" y="70">       p!``  &#x27;! |&#x27;&#x27;` &#x27;&#x27;&#x27;|||jhlj%w           </tspan>
+<tspan x="15" y="90">     ,@L `    ,,        &#x27;&#x27;!`|j%M]%M         </tspan>
+<tspan x="15" y="110">    ]j&#x27;` .,wp@pw,    `.     &#x27;&#x27;&#x27;&#x27;|%Wg        </tspan>
+<tspan x="15" y="130">  /{||]@@@@@@@@@pp.             |||||       </tspan>
+<tspan x="15" y="150"> &#x27;` &#x27;]@@@@@@@@@@@@@@p     , ,&#x27;&#x27;&#x27;` `         </tspan>
+<tspan x="15" y="170">  , :]%%@@@@@%%%%%%k%h &#x27;*||mkr     *        </tspan>
+<tspan x="15" y="190">  &#x27;  j%M`      |jkk&#x27;   ~nrn=|i    ;`        </tspan>
+<tspan x="15" y="210">   !  jrr*^`             `&quot;!  L&#x27;&#x27;:!         </tspan>
+<tspan x="15" y="230">    j  lp;,.  ,/ @@    ,;\nmy &quot;  ,~         </tspan>
+<tspan x="15" y="250">   i r @@@@mmHM @@@@ `^****M*,p ;,          </tspan>
+<tspan x="15" y="270">   | ]@@@@HHH]g@M%%%%%H,jmgpmb%  j          </tspan>
+<tspan x="15" y="290">    ;;%%%%%k%@[,.n|;.;j%%k|%k%%&#x27;,[          </tspan>
+<tspan x="15" y="310">     H|%%k%%%j%k||,;;j;!!&#x27;|%ij}]@           </tspan>
+<tspan x="15" y="330">     &quot;djjmkL,&quot;]][,,,,wwxw;|#kjk`            </tspan>
+<tspan x="15" y="350">       %;%km%%%%M%M|%%jkkii|||[             </tspan>
+<tspan x="15" y="370">        kjj%%kkkl|!||||||j|||&quot;              </tspan>
+<tspan x="15" y="390">         |jm%H@@@b%%kkmk%i|!,[              </tspan>
+<tspan x="15" y="410">         @p|j%%%%jkk|||j*&#x27;`;j[              </tspan>
+<tspan x="15" y="430">        ]@@@g|&#x27;&#x27;&#x27;`&#x27;&#x27;&#x27;  ` ,;j%k              </tspan>
+<tspan x="15" y="450">        @@@@@mgmp;,,,,:;jj%%k%              </tspan>
+<tspan x="15" y="470">       @@@@@@@@%%kgki!|jjjj%k%@ .           </tspan>
+<tspan x="15" y="490">. ^[&#x27;&#x27; %@@@@HH%b%k{illljkjj%%%% ; `,.       </tspan>
+<tspan x="15" y="510">=[&#x27; ` . %HH%%%%%H@gkilljjj%kk%&quot;.   `&#x27;i      </tspan>
+</text>
+<text x="390" y="30" fill="#c9d1d9">
+<tspan x="390" y="30">saad@ahsan</tspan> -———————————————————————————————————————————-—-
+<tspan x="390" y="50" class="cc">. </tspan><tspan class="key">OS</tspan>:<tspan class="cc"> ........................ </tspan><tspan class="value">Windows 10, Linux</tspan>
+<tspan x="390" y="70" class="cc">. </tspan><tspan class="key">Uptime</tspan>:<tspan class="cc"> ...................... </tspan><tspan class="value">Continuous learner since day 1</tspan>
+<tspan x="390" y="90" class="cc">. </tspan><tspan class="key">Role</tspan>:<tspan class="cc"> ......................... </tspan><tspan class="value">Full-Stack Product Builder</tspan>
+<tspan x="390" y="110" class="cc">. </tspan><tspan class="key">Focus</tspan>:<tspan class="cc"> ........... </tspan><tspan class="value">Trading, Web3, AI Automation</tspan>
+<tspan x="390" y="130" class="cc">. </tspan><tspan class="key">IDE</tspan>:<tspan class="cc"> ........................ </tspan><tspan class="value">VSCode, Cursor</tspan>
+<tspan x="390" y="150" class="cc">. </tspan>
+<tspan x="390" y="170" class="cc">. </tspan><tspan class="key">Languages</tspan>.<tspan class="key">Programming</tspan>:<tspan class="cc"> .. </tspan><tspan class="value">JS, TS, Python, Rust, C, C++, C#, Java, Dart</tspan>
+<tspan x="390" y="190" class="cc">. </tspan><tspan class="key">Languages</tspan>.<tspan class="key">Markup</tspan>:<tspan class="cc"> ............. </tspan><tspan class="value">HTML, CSS, JSON, YAML</tspan>
+<tspan x="390" y="210" class="cc">. </tspan><tspan class="key">Languages</tspan>.<tspan class="key">Real</tspan>:<tspan class="cc"> ......................... </tspan><tspan class="value">Bangla, English</tspan>
+<tspan x="390" y="230" class="cc">. </tspan>
+<tspan x="390" y="250" class="cc">. </tspan><tspan class="key">Frameworks</tspan>:<tspan class="cc"> .............. </tspan><tspan class="value">React, Next.js, Node.js, SolidJS, Vite</tspan>
+<tspan x="390" y="270" class="cc">. </tspan><tspan class="key">Databases</tspan>:<tspan class="cc"> ............... </tspan><tspan class="value">MongoDB, MySQL, Firebase, Supabase</tspan>
+<tspan x="390" y="290" class="cc">. </tspan><tspan class="key">Cloud</tspan>:<tspan class="cc"> ..................... </tspan><tspan class="value">AWS, GCP, Azure, Vercel</tspan>
+<tspan x="390" y="310" class="cc">. </tspan><tspan class="key">Web3</tspan>:<tspan class="cc"> .... </tspan><tspan class="value">Ethereum, Solana, Polygon, Hardhat, Ethers.js</tspan>
+<tspan x="390" y="350">- Contact</tspan> -——————————————————————————————————————————————-—-
+<tspan x="390" y="370" class="cc">. </tspan><tspan class="key">Email</tspan>:<tspan class="cc"> .................................. </tspan><tspan class="value">dinerahmed476@gmail.com</tspan>
+<tspan x="390" y="390" class="cc">. </tspan><tspan class="key">LinkedIn</tspan>:<tspan class="cc"> ............................... </tspan><tspan class="value">diner-ahmed</tspan>
+<tspan x="390" y="410" class="cc">. </tspan><tspan class="key">X/Twitter</tspan>:<tspan class="cc"> .............................. </tspan><tspan class="value">DinerAhmed14</tspan>
+<tspan x="390" y="430" class="cc">. </tspan><tspan class="key">Discord</tspan>:<tspan class="cc"> ................................. </tspan><tspan class="value">DinerAhmed</tspan>
+<tspan x="390" y="470">- Interests</tspan> -————————————————————————————————————————————-—-
+<tspan x="390" y="490" class="cc">. </tspan><tspan class="key">Passion</tspan>:<tspan class="cc"> ............. </tspan><tspan class="value">Web3 &amp; AI · Finance &amp; Technology</tspan>
+<tspan x="390" y="510" class="cc">. </tspan><tspan class="key">Mission</tspan>:<tspan class="cc"> ........ </tspan><tspan class="value">Execution, Scalability, Real-World Impact</tspan>
+<tspan x="390" y="530" class="cc">. </tspan><tspan class="key">Design</tspan>:<tspan class="cc"> .............. </tspan><tspan class="value">Figma, Photoshop, Illustrator, Blender</tspan>
 </text>
 </svg>
