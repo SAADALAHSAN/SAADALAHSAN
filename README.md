@@ -1,7 +1,7 @@
 <a href="https://github.com/SAADALAHSAN/SAADALAHSAN">
   <picture>
-    <source media="(prefers-color-scheme: dark)" srcset="dark_mode.svg?v=3">
-    <img alt="SAAD AL AHSAN's GitHub Profile README" src="dark_mode.svg?v=3">
+    <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/SAADALAHSAN/SAADALAHSAN/main/dark_mode.svg?v=5">
+    <img alt="SAAD AL AHSAN's GitHub Profile README" src="https://raw.githubusercontent.com/SAADALAHSAN/SAADALAHSAN/main/dark_mode.svg?v=5">
   </picture>
 </a>
 
