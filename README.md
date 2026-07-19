@@ -1,7 +1,7 @@
 <a href="https://github.com/SAADALAHSAN/SAADALAHSAN">
   <picture>
-    <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/SAADALAHSAN/SAADALAHSAN/main/profile_card.svg?v=15">
-    <img alt="SAAD AL AHSAN's GitHub Profile README" src="https://raw.githubusercontent.com/SAADALAHSAN/SAADALAHSAN/main/profile_card.svg?v=15">
+    <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/SAADALAHSAN/SAADALAHSAN/main/profile_card.svg?v=20">
+    <img alt="SAAD AL AHSAN's GitHub Profile README" src="https://raw.githubusercontent.com/SAADALAHSAN/SAADALAHSAN/main/profile_card.svg?v=20">
   </picture>
 </a>
 
