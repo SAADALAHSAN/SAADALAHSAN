@@ -1,7 +1,7 @@
-<a href="https://github.com/DinerAhmed10/DinerAhmed10">
+<a href="https://github.com/SAADALAHSAN/SAADALAHSAN">
   <picture>
-    <source media="(prefers-color-scheme: dark)" srcset="dark_mode.svg">
-    <img alt="Diner Ahmed's GitHub Profile README" src="dark_mode.svg">
+    <source media="(prefers-color-scheme: dark)" srcset="dark_mode.svg?v=3">
+    <img alt="SAAD AL AHSAN's GitHub Profile README" src="dark_mode.svg?v=3">
   </picture>
 </a>
 
