@@ -1,13 +1,13 @@
 <a href="https://github.com/SAADALAHSAN/SAADALAHSAN">
   <picture>
-    <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/SAADALAHSAN/SAADALAHSAN/main/profile_card.svg?v=35">
-    <img alt="SAAD AL AHSAN's GitHub Profile README" src="https://raw.githubusercontent.com/SAADALAHSAN/SAADALAHSAN/main/profile_card.svg?v=35">
+    <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/SAADALAHSAN/SAADALAHSAN/main/profile_card.svg?v=40">
+    <img alt="SAAD AL AHSAN's GitHub Profile README" src="https://raw.githubusercontent.com/SAADALAHSAN/SAADALAHSAN/main/profile_card.svg?v=40">
   </picture>
 </a>
 
 
 ## 🌐 Socials:
-[![Discord](https://img.shields.io/badge/Discord-%237289DA.svg?logo=discord&logoColor=white)](https://discord.gg/https://discord.com/users/1258989167103447054) [![LinkedIn](https://img.shields.io/badge/LinkedIn-%230077B5.svg?logo=linkedin&logoColor=white)](https://linkedin.com/in/https://www.linkedin.com/in/diner-ahmed-173b6a38b?utm_source=share_via&utm_content=profile&utm_medium=member_android) [![X](https://img.shields.io/badge/X-black.svg?logo=X&logoColor=white)](https://x.com/https://x.com/DinerAhmed14) [![email](https://img.shields.io/badge/Email-D14836?logo=gmail&logoColor=white)](mailto:dinerahmed476@gmail.com) 
+[![Discord](https://img.shields.io/badge/Discord-%237289DA.svg?logo=discord&logoColor=white)](https://discord.com) [![LinkedIn](https://img.shields.io/badge/LinkedIn-%230077B5.svg?logo=linkedin&logoColor=white)](https://linkedin.com/in/saadalahsan) [![X](https://img.shields.io/badge/X-black.svg?logo=X&logoColor=white)](https://x.com/SaadAl_Ahsan) [![email](https://img.shields.io/badge/Email-D14836?logo=gmail&logoColor=white)](mailto:saadalahsanmain@gmail.com) 
 
 ‎
 
