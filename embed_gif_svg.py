@@ -1,15 +1,55 @@
 import base64
 import os
+import cv2
+import numpy as np
 
 def build_svg_cards():
     script_dir = os.path.dirname(os.path.abspath(__file__))
     gif_path = os.path.join(script_dir, "coding_sticker.gif")
     
+    # 1. Dark Mode: original GIF with dark background
     with open(gif_path, "rb") as f:
         dark_gif_bytes = f.read()
     dark_b64 = base64.b64encode(dark_gif_bytes).decode("utf-8")
     dark_data_uri = f"data:image/gif;base64,{dark_b64}"
     
+    # 2. Light Mode: Clean cutout of ONLY the character (no black box, no background)
+    im = cv2.imread(gif_path)
+    bg = np.array([34, 27, 22], dtype=np.uint8)
+
+    diff = np.abs(im.astype(int) - bg.astype(int))
+    mask = np.any(diff > 5, axis=2).astype(np.uint8) * 255
+
+    kernel = cv2.getStructuringElement(cv2.MORPH_RECT, (12, 12))
+    closed = cv2.morphologyEx(mask, cv2.MORPH_CLOSE, kernel)
+
+    contours, hierarchy = cv2.findContours(closed, cv2.RETR_CCOMP, cv2.CHAIN_APPROX_SIMPLE)
+    filled_mask = np.zeros_like(mask)
+
+    for i, cnt in enumerate(contours):
+        if cv2.contourArea(cnt) > 200:
+            if hierarchy[0][i][3] == -1:
+                cv2.drawContours(filled_mask, [cnt], -1, 255, -1)
+            else:
+                if cv2.contourArea(cnt) > 2000:
+                    cv2.drawContours(filled_mask, [cnt], -1, 0, -1)
+
+    kernel_dilate = cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (5, 5))
+    filled_mask = cv2.dilate(filled_mask, kernel_dilate)
+
+    smooth_mask = cv2.GaussianBlur(filled_mask, (5, 5), 0)
+
+    out_rgba = np.zeros((im.shape[0], im.shape[1], 4), dtype=np.uint8)
+    out_rgba[:, :, :3] = im
+    out_rgba[:, :, 3] = smooth_mask
+
+    cutout_path = os.path.join(script_dir, "character_cutout.png")
+    cv2.imwrite(cutout_path, out_rgba)
+
+    with open(cutout_path, "rb") as f:
+        cutout_b64 = base64.b64encode(f.read()).decode("utf-8")
+    cutout_data_uri = f"data:image/png;base64,{cutout_b64}"
+
     # SVG Dimensions: width 985px, height 530px
     # Left side GIF: x="15" y="60" width="390" height="390"
     # Right side Text: x="415" y="35"
@@ -86,12 +126,8 @@ text, tspan {{white-space: pre;}}
 <!-- Light Mode Card Background with subtle GitHub border -->
 <rect width="985px" height="530px" fill="#ffffff" stroke="#d0d7de" stroke-width="2" rx="15"/>
 
-<!-- Dark terminal monitor for ASCII art (maintains original art fidelity) -->
-<rect x="25" y="30" width="370" height="470" fill="#161b22" rx="12" stroke="#30363d" stroke-width="1"/>
-<circle cx="48" cy="52" r="5" fill="#ff5f56"/>
-<circle cx="64" cy="52" r="5" fill="#ffbd2e"/>
-<circle cx="80" cy="52" r="5" fill="#27c93f"/>
-<image href="{dark_data_uri}" xlink:href="{dark_data_uri}" x="25" y="75" width="370" height="370" preserveAspectRatio="xMidYMid meet" />
+<!-- Transparent Cutout Coder (NO black box, NO background rectangle) -->
+<image href="{cutout_data_uri}" xlink:href="{cutout_data_uri}" x="15" y="60" width="390" height="390" preserveAspectRatio="xMidYMid meet" />
 
 <!-- Terminal Profile Details on Right Side -->
 <text x="415" y="35" fill="#24292f">
@@ -129,7 +165,7 @@ text, tspan {{white-space: pre;}}
         f.write(dark_svg)
     with open(light_out, "w", encoding="utf-8") as f:
         f.write(light_svg)
-    print("SVGs successfully generated!")
+    print("SVGs successfully generated with clean character cutout!")
 
 if __name__ == '__main__':
     build_svg_cards()
