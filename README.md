@@ -1,7 +1,8 @@
 <a href="https://github.com/SAADALAHSAN/SAADALAHSAN">
   <picture>
-    <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/SAADALAHSAN/SAADALAHSAN/main/profile_card.svg?v=40">
-    <img alt="SAAD AL AHSAN's GitHub Profile README" src="https://raw.githubusercontent.com/SAADALAHSAN/SAADALAHSAN/main/profile_card.svg?v=40">
+    <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/SAADALAHSAN/SAADALAHSAN/main/profile_card.svg?v=41">
+    <source media="(prefers-color-scheme: light)" srcset="https://raw.githubusercontent.com/SAADALAHSAN/SAADALAHSAN/main/profile_card_light.svg?v=41">
+    <img alt="SAAD AL AHSAN's GitHub Profile README" src="https://raw.githubusercontent.com/SAADALAHSAN/SAADALAHSAN/main/profile_card.svg?v=41">
   </picture>
 </a>
 
@@ -17,21 +18,37 @@
   <tr>
     <td width="50%" valign="top">
       <h4>💻 Languages & Core</h4>
-      <img src="https://skillicons.dev/icons?i=js,ts,py,rust,html,css,c,cpp,cs,java,dart&theme=dark" />
+      <picture>
+        <source media="(prefers-color-scheme: dark)" srcset="https://skillicons.dev/icons?i=js,ts,py,rust,html,css,c,cpp,cs,java,dart&theme=dark">
+        <source media="(prefers-color-scheme: light)" srcset="https://skillicons.dev/icons?i=js,ts,py,rust,html,css,c,cpp,cs,java,dart&theme=light">
+        <img src="https://skillicons.dev/icons?i=js,ts,py,rust,html,css,c,cpp,cs,java,dart&theme=dark" />
+      </picture>
     </td>
     <td width="50%" valign="top">
       <h4>🚀 Frameworks & Tools</h4>
-      <img src="https://skillicons.dev/icons?i=react,nextjs,nodejs,solidjs,vite,webpack,git,vscode,wordpress&theme=dark" />
+      <picture>
+        <source media="(prefers-color-scheme: dark)" srcset="https://skillicons.dev/icons?i=react,nextjs,nodejs,solidjs,vite,webpack,git,vscode,wordpress&theme=dark">
+        <source media="(prefers-color-scheme: light)" srcset="https://skillicons.dev/icons?i=react,nextjs,nodejs,solidjs,vite,webpack,git,vscode,wordpress&theme=light">
+        <img src="https://skillicons.dev/icons?i=react,nextjs,nodejs,solidjs,vite,webpack,git,vscode,wordpress&theme=dark" />
+      </picture>
     </td>
   </tr>
   <tr>
     <td width="50%" valign="top">
       <h4>📊 Databases & Cloud</h4>
-      <img src="https://skillicons.dev/icons?i=mongodb,mysql,firebase,supabase,aws,gcp,azure,vercel,linux,ubuntu&theme=dark" />
+      <picture>
+        <source media="(prefers-color-scheme: dark)" srcset="https://skillicons.dev/icons?i=mongodb,mysql,firebase,supabase,aws,gcp,azure,vercel,linux,ubuntu&theme=dark">
+        <source media="(prefers-color-scheme: light)" srcset="https://skillicons.dev/icons?i=mongodb,mysql,firebase,supabase,aws,gcp,azure,vercel,linux,ubuntu&theme=light">
+        <img src="https://skillicons.dev/icons?i=mongodb,mysql,firebase,supabase,aws,gcp,azure,vercel,linux,ubuntu&theme=dark" />
+      </picture>
     </td>
     <td width="50%" valign="top">
       <h4>🎨 Design & Creative</h4>
-      <img src="https://skillicons.dev/icons?i=figma,ps,ai,ae,pr,blender&theme=dark" />
+      <picture>
+        <source media="(prefers-color-scheme: dark)" srcset="https://skillicons.dev/icons?i=figma,ps,ai,ae,pr,blender&theme=dark">
+        <source media="(prefers-color-scheme: light)" srcset="https://skillicons.dev/icons?i=figma,ps,ai,ae,pr,blender&theme=light">
+        <img src="https://skillicons.dev/icons?i=figma,ps,ai,ae,pr,blender&theme=dark" />
+      </picture>
     </td>
   </tr>
 </table>
@@ -63,5 +80,3 @@
 </p>
 
 <br />
-
-
