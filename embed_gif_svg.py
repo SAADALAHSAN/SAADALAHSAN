@@ -1,48 +1,14 @@
 import base64
 import os
-from PIL import Image, ImageSequence
 
 def build_svg_cards():
     script_dir = os.path.dirname(os.path.abspath(__file__))
     gif_path = os.path.join(script_dir, "coding_sticker.gif")
     
-    # 1. Load dark GIF
     with open(gif_path, "rb") as f:
         dark_gif_bytes = f.read()
     dark_b64 = base64.b64encode(dark_gif_bytes).decode("utf-8")
     dark_data_uri = f"data:image/gif;base64,{dark_b64}"
-    
-    # 2. Generate white background GIF
-    im = Image.open(gif_path)
-    bg = (22, 27, 34)
-    white_frames = []
-    for frame in ImageSequence.Iterator(im):
-        rgba = frame.convert('RGBA')
-        datas = rgba.getdata()
-        new_data = []
-        for p in datas:
-            if p[0] == bg[0] and p[1] == bg[1] and p[2] == bg[2]:
-                new_data.append((255, 255, 255, 255))
-            else:
-                new_data.append(p)
-        rgba.putdata(new_data)
-        p_frame = rgba.convert('RGB').convert('P', palette=Image.ADAPTIVE, colors=255)
-        white_frames.append(p_frame)
-
-    white_gif_path = os.path.join(script_dir, "coding_sticker_white.gif")
-    white_frames[0].save(
-        white_gif_path,
-        save_all=True,
-        append_images=white_frames[1:],
-        duration=im.info.get('duration', 90),
-        loop=0,
-        optimize=False
-    )
-    
-    with open(white_gif_path, "rb") as f:
-        white_gif_bytes = f.read()
-    white_b64 = base64.b64encode(white_gif_bytes).decode("utf-8")
-    white_data_uri = f"data:image/gif;base64,{white_b64}"
     
     # SVG Dimensions: width 985px, height 530px
     # Left side GIF: x="15" y="60" width="390" height="390"
@@ -120,8 +86,12 @@ text, tspan {{white-space: pre;}}
 <!-- Light Mode Card Background with subtle GitHub border -->
 <rect width="985px" height="530px" fill="#ffffff" stroke="#d0d7de" stroke-width="2" rx="15"/>
 
-<!-- Animated ASCII Coding GIF Sticker on Left Side (white background blends seamlessly) -->
-<image href="{white_data_uri}" xlink:href="{white_data_uri}" x="15" y="60" width="390" height="390" preserveAspectRatio="xMidYMid meet" />
+<!-- Dark terminal monitor for ASCII art (maintains original art fidelity) -->
+<rect x="25" y="30" width="370" height="470" fill="#161b22" rx="12" stroke="#30363d" stroke-width="1"/>
+<circle cx="48" cy="52" r="5" fill="#ff5f56"/>
+<circle cx="64" cy="52" r="5" fill="#ffbd2e"/>
+<circle cx="80" cy="52" r="5" fill="#27c93f"/>
+<image href="{dark_data_uri}" xlink:href="{dark_data_uri}" x="25" y="75" width="370" height="370" preserveAspectRatio="xMidYMid meet" />
 
 <!-- Terminal Profile Details on Right Side -->
 <text x="415" y="35" fill="#24292f">
@@ -155,14 +125,11 @@ text, tspan {{white-space: pre;}}
     
     with open(dark_out, "w", encoding="utf-8") as f:
         f.write(dark_svg)
-    print("Dark SVG written:", dark_out)
-    
     with open(dark_copy, "w", encoding="utf-8") as f:
         f.write(dark_svg)
-    
     with open(light_out, "w", encoding="utf-8") as f:
         f.write(light_svg)
-    print("Light SVG written:", light_out)
+    print("SVGs successfully generated!")
 
 if __name__ == '__main__':
     build_svg_cards()
