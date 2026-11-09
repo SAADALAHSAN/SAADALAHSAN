@@ -1,86 +1,17 @@
 import base64
 import os
-from collections import deque
-from PIL import Image
-
-def flood_fill_white(img_path):
-    """
-    Flood-fill from all edge pixels to replace ONLY the outer background
-    with white. Internal dark pixels (same color as bg but enclosed inside
-    the character) are preserved perfectly.
-    """
-    im = Image.open(img_path).convert("RGB")
-    w, h = im.size
-    pixels = im.load()
-    
-    # Background color: RGB(22, 27, 34) with tolerance of 8
-    bg_r, bg_g, bg_b = 22, 27, 34
-    tol = 8
-    
-    def is_bg(r, g, b):
-        return abs(r - bg_r) <= tol and abs(g - bg_g) <= tol and abs(b - bg_b) <= tol
-    
-    # BFS flood-fill from ALL edge pixels that match background
-    visited = set()
-    queue = deque()
-    
-    # Seed from all 4 edges
-    for x in range(w):
-        for y_edge in [0, h - 1]:
-            r, g, b = pixels[x, y_edge]
-            if is_bg(r, g, b) and (x, y_edge) not in visited:
-                queue.append((x, y_edge))
-                visited.add((x, y_edge))
-    for y in range(h):
-        for x_edge in [0, w - 1]:
-            r, g, b = pixels[x_edge, y]
-            if is_bg(r, g, b) and (x_edge, y) not in visited:
-                queue.append((x_edge, y))
-                visited.add((x_edge, y))
-    
-    # BFS
-    while queue:
-        cx, cy = queue.popleft()
-        for dx, dy in [(-1, 0), (1, 0), (0, -1), (0, 1)]:
-            nx, ny = cx + dx, cy + dy
-            if 0 <= nx < w and 0 <= ny < h and (nx, ny) not in visited:
-                r, g, b = pixels[nx, ny]
-                if is_bg(r, g, b):
-                    visited.add((nx, ny))
-                    queue.append((nx, ny))
-    
-    # Replace only the outer (visited) pixels with white
-    for (x, y) in visited:
-        pixels[x, y] = (255, 255, 255)
-    
-    print(f"Flood-fill complete: {len(visited)} outer bg pixels -> white")
-    return im
-
 
 def build_svg_cards():
     script_dir = os.path.dirname(os.path.abspath(__file__))
     gif_path = os.path.join(script_dir, "coding_sticker.gif")
     
-    # 1. Dark Mode: original GIF with dark background (unchanged)
+    # Read original GIF (used for BOTH dark and light mode - NO modification)
     with open(gif_path, "rb") as f:
-        dark_gif_bytes = f.read()
-    dark_b64 = base64.b64encode(dark_gif_bytes).decode("utf-8")
-    dark_data_uri = f"data:image/gif;base64,{dark_b64}"
+        gif_bytes = f.read()
+    gif_b64 = base64.b64encode(gif_bytes).decode("utf-8")
+    gif_data_uri = f"data:image/gif;base64,{gif_b64}"
     
-    # 2. Light Mode: Flood-fill outer bg -> white, keep character intact
-    light_img = flood_fill_white(gif_path)
-    
-    # Save as PNG for embedding
-    light_path = os.path.join(script_dir, "coding_sticker_light.png")
-    light_img.save(light_path, "PNG")
-    
-    with open(light_path, "rb") as f:
-        light_b64 = base64.b64encode(f.read()).decode("utf-8")
-    light_data_uri = f"data:image/png;base64,{light_b64}"
-    
-    print(f"Light mode image saved: {light_path}")
-    
-    # --- DARK MODE SVG ---
+    # --- DARK MODE SVG (unchanged) ---
     dark_svg = f"""<?xml version='1.0' encoding='UTF-8'?>
 <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" font-family="ConsolasFallback,Consolas,monospace" width="985px" height="530px" font-size="14.5px">
 <style>
@@ -101,7 +32,7 @@ text, tspan {{white-space: pre;}}
 <rect width="985px" height="530px" fill="#161b22" rx="15"/>
 
 <!-- Animated ASCII Coding GIF Sticker on Left Side -->
-<image href="{dark_data_uri}" xlink:href="{dark_data_uri}" x="15" y="60" width="390" height="390" preserveAspectRatio="xMidYMid meet" />
+<image href="{gif_data_uri}" xlink:href="{gif_data_uri}" x="15" y="60" width="390" height="390" preserveAspectRatio="xMidYMid meet" />
 
 <!-- Terminal Profile Details on Right Side -->
 <text x="415" y="35" fill="#c9d1d9">
@@ -130,6 +61,9 @@ text, tspan {{white-space: pre;}}
 """
 
     # --- LIGHT MODE SVG ---
+    # Original GIF untouched, sitting in a rounded dark container on white card
+    # The dark container matches the GIF bg so the character blends perfectly
+    # It looks like a terminal/code window embedded in the white card
     light_svg = f"""<?xml version='1.0' encoding='UTF-8'?>
 <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" font-family="ConsolasFallback,Consolas,monospace" width="985px" height="530px" font-size="14.5px">
 <style>
@@ -149,11 +83,14 @@ size-adjust: 109%;
 text, tspan {{white-space: pre;}}
 </style>
 
-<!-- Light Mode Card Background with subtle GitHub border -->
-<rect width="985px" height="530px" fill="#ffffff" stroke="#d0d7de" stroke-width="2" rx="15"/>
+<!-- White card background -->
+<rect width="985px" height="530px" fill="#ffffff" stroke="#d0d7de" stroke-width="1" rx="15"/>
 
-<!-- Coder character with white bg (flood-filled, all internal details intact) -->
-<image href="{light_data_uri}" xlink:href="{light_data_uri}" x="15" y="60" width="390" height="390" preserveAspectRatio="xMidYMid meet" />
+<!-- Dark rounded container for the character GIF (matches GIF bg perfectly) -->
+<rect x="20" y="55" width="380" height="400" fill="#161b22" rx="12"/>
+
+<!-- Original GIF sitting perfectly inside the dark container -->
+<image href="{gif_data_uri}" xlink:href="{gif_data_uri}" x="15" y="60" width="390" height="390" preserveAspectRatio="xMidYMid meet" />
 
 <!-- Terminal Profile Details on Right Side -->
 <text x="415" y="35" fill="#24292f">
@@ -191,7 +128,7 @@ text, tspan {{white-space: pre;}}
         f.write(dark_svg)
     with open(light_out, "w", encoding="utf-8") as f:
         f.write(light_svg)
-    print("SVGs successfully generated! Character intact with flood-fill approach.")
+    print("SVGs generated! Original GIF used for both modes.")
 
 if __name__ == '__main__':
     build_svg_cards()
