@@ -32,38 +32,49 @@ def build_svg_cards():
         mask = np.any(diff > 5, axis=2).astype(np.uint8) * 255
         combined_mask = cv2.bitwise_or(combined_mask, mask)
     
-    # Solid silhouette preserving full monitor rectangle, desk, chair, and internal details
-    kernel = cv2.getStructuringElement(cv2.MORPH_RECT, (25, 25))
-    closed = cv2.morphologyEx(combined_mask, cv2.MORPH_CLOSE, kernel)
+    h, w = combined_mask.shape
+    h_idx = np.arange(h)[:, None]
+    w_idx = np.arange(w)[None, :]
     
-    contours, _ = cv2.findContours(closed, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
-    silhouette = np.zeros_like(combined_mask)
-    for cnt in contours:
-        if cv2.contourArea(cnt) > 500:
-            cv2.drawContours(silhouette, [cnt], -1, 255, -1)
+    # 1. Computer monitor screen: 100% solid rectangle showing code
+    mon_mask = (w_idx >= 413) & (w_idx <= 738) & (h_idx >= 242) & (h_idx <= 425)
+    
+    # 2. Coder head + body + shirt + hands + chair back (X <= 393, Y <= 475)
+    # Closed tightly to preserve face, both eyes, glasses, shirt, and hair solid
+    coder_chars = (combined_mask > 0) & (w_idx <= 393) & (h_idx <= 475)
+    kernel_body = cv2.getStructuringElement(cv2.MORPH_RECT, (17, 17))
+    coder_closed = cv2.morphologyEx(coder_chars.astype(np.uint8)*255, cv2.MORPH_CLOSE, kernel_body)
+    cnts, _ = cv2.findContours(coder_closed, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+    coder_mask = np.zeros_like(combined_mask)
+    for c in cnts:
+        if cv2.contourArea(c) > 500:
+            cv2.drawContours(coder_mask, [c], -1, 255, -1)
             
-    kernel_smooth = cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (7, 7))
-    silhouette = cv2.morphologyEx(silhouette, cv2.MORPH_CLOSE, kernel_smooth)
+    # 3. Legs: each leg closed tightly, preserving blue jeans and shoes with clean white gap between legs
+    legs_chars = (combined_mask > 0) & (h_idx >= 570)
+    kernel_legs = cv2.getStructuringElement(cv2.MORPH_RECT, (7, 15))
+    legs_closed = cv2.morphologyEx(legs_chars.astype(np.uint8)*255, cv2.MORPH_CLOSE, kernel_legs)
+    cnts_l, _ = cv2.findContours(legs_closed, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+    legs_mask = np.zeros_like(combined_mask)
+    for c in cnts_l:
+        if cv2.contourArea(c) > 100:
+            cv2.drawContours(legs_mask, [c], -1, 255, -1)
+            
+    # 4. Desk surface, keyboard, monitor stand, chair leg, desk leg (tight 5x5 close - NO giant black slabs)
+    other_chars = (combined_mask > 0) & ~mon_mask & ~coder_mask & ~legs_mask
+    kernel_tight = cv2.getStructuringElement(cv2.MORPH_RECT, (5, 5))
+    other_closed = cv2.morphologyEx(other_chars.astype(np.uint8)*255, cv2.MORPH_CLOSE, kernel_tight)
     
-    # Cleanly remove background in open air regions while strictly preserving character solids:
-    h_idx = np.arange(orig_gif.height)[:, None]
-    w_idx = np.arange(orig_gif.width)[None, :]
+    # Combine into final silhouette
+    silhouette = np.zeros_like(combined_mask)
+    silhouette[mon_mask] = 255
+    silhouette[coder_mask > 0] = 255
+    silhouette[legs_mask > 0] = 255
+    silhouette[other_closed > 0] = 255
     
-    # 1. Gap between face and monitor screen (Y: 240..425, X: 394..413)
-    # Right eye ends at X=393, monitor starts at X=413. Using w_idx >= 394 protects both eyes completely!
+    # Ensure gap between face and monitor is 100% pure white (X: 394..413 protects both eyes completely)
     gap_face = (combined_mask == 0) & (w_idx >= 394) & (w_idx < 413) & (h_idx >= 240) & (h_idx <= 425)
     silhouette[gap_face] = 0
-    
-    # 2. Under monitor screen (Y: 420..470, X: 394..740 except monitor stand X: 570..610)
-    # Protects the hands (X < 394) and the table surface (Y >= 475)!
-    stand_region = (w_idx >= 570) & (w_idx <= 610)
-    under_monitor_air = (combined_mask == 0) & (h_idx >= 420) & (h_idx <= 470) & (w_idx >= 394) & (w_idx <= 740) & ~stand_region
-    silhouette[under_monitor_air] = 0
-    
-    # 3. Below the desk (Y >= 570) - between legs, chair leg, desk leg
-    # Table surface extends down to Y=565. Starting at Y >= 570 protects the table 100%!
-    legs_air = (combined_mask == 0) & (h_idx >= 570)
-    silhouette[legs_air] = 0
     
     # Create white-background frames
     white_frames = []
@@ -197,6 +208,7 @@ text, tspan {{white-space: pre;}}
     light_v3_out = os.path.join(script_dir, "profile_card_light_v3.svg")
     light_v4_out = os.path.join(script_dir, "profile_card_light_v4.svg")
     light_v5_out = os.path.join(script_dir, "profile_card_light_v5.svg")
+    light_v6_out = os.path.join(script_dir, "profile_card_light_v6.svg")
     dark_copy = os.path.join(script_dir, "dark_mode.svg")
     
     with open(dark_out, "w", encoding="utf-8") as f:
@@ -211,7 +223,9 @@ text, tspan {{white-space: pre;}}
         f.write(light_svg)
     with open(light_v5_out, "w", encoding="utf-8") as f:
         f.write(light_svg)
-    print("SVGs successfully generated! profile_card_light.svg, v3, v4, and v5 written.")
+    with open(light_v6_out, "w", encoding="utf-8") as f:
+        f.write(light_svg)
+    print("SVGs successfully generated! profile_card_light.svg, v3, v4, v5, and v6 written.")
 
 if __name__ == '__main__':
     build_svg_cards()
