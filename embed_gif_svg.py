@@ -15,9 +15,8 @@ def build_svg_cards():
     dark_data_uri = f"data:image/gif;base64,{dark_b64}"
     
     # 2. Light Mode: 5-frame animated GIF with pure white background outside
-    # Uses commit 5069356 solid silhouette so that the desk, hands, keyboard, monitor,
-    # chair, and legs retain all of their original internal black background and details.
-    # ONLY removes the small vertical gap between the person's face and the monitor (Y: 240..400, X: 370..412).
+    # Solid silhouette preserving full monitor rectangle, desk, chair, and internal details.
+    # ONLY removes the small vertical gap between the person's face and the monitor (Y: 240..460, X: 374..413).
     orig_gif = Image.open(gif_path)
     bg = np.array([34, 27, 22], dtype=np.uint8) # BGR for OpenCV
     
@@ -46,10 +45,10 @@ def build_svg_cards():
     kernel_smooth = cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (7, 7))
     silhouette = cv2.morphologyEx(silhouette, cv2.MORPH_CLOSE, kernel_smooth)
     
-    # ONLY remove the black background in the gap between the person's face and the monitor
+    # ONLY remove the black background in the gap between the person and the monitor
     h_idx = np.arange(orig_gif.height)[:, None]
     w_idx = np.arange(orig_gif.width)[None, :]
-    gap = (combined_mask == 0) & (w_idx >= 370) & (w_idx < 413) & (h_idx >= 240) & (h_idx < 400)
+    gap = (combined_mask == 0) & (w_idx >= 374) & (w_idx < 413) & (h_idx >= 240) & (h_idx < 460)
     silhouette[gap] = 0
     
     # Create white-background frames
@@ -181,6 +180,7 @@ text, tspan {{white-space: pre;}}
 
     dark_out = os.path.join(script_dir, "profile_card.svg")
     light_out = os.path.join(script_dir, "profile_card_light.svg")
+    light_v3_out = os.path.join(script_dir, "profile_card_light_v3.svg")
     dark_copy = os.path.join(script_dir, "dark_mode.svg")
     
     with open(dark_out, "w", encoding="utf-8") as f:
@@ -189,7 +189,9 @@ text, tspan {{white-space: pre;}}
         f.write(dark_svg)
     with open(light_out, "w", encoding="utf-8") as f:
         f.write(light_svg)
-    print("SVGs successfully generated! All internal details intact, gap cleanly opened.")
+    with open(light_v3_out, "w", encoding="utf-8") as f:
+        f.write(light_svg)
+    print("SVGs successfully generated! Both profile_card_light.svg and profile_card_light_v3.svg written.")
 
 if __name__ == '__main__':
     build_svg_cards()
