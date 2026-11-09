@@ -14,11 +14,11 @@ def build_svg_cards():
     dark_b64 = base64.b64encode(dark_gif_bytes).decode("utf-8")
     dark_data_uri = f"data:image/gif;base64,{dark_b64}"
     
-    # 2. Light Mode: Generate 5-frame animated GIF with pure white background outside silhouette
-    # The silhouette tightly hugs the character, monitor, desk, chair, and legs.
-    # Everything inside the silhouette (including ASCII text, animations, and monitor details)
-    # is 100% preserved. Outside the silhouette is pure white (#ffffff), seamlessly blending
-    # into the white card background with NO black box and NO container.
+    # 2. Light Mode: 5-frame animated GIF with pure white background outside silhouette
+    # Uses a full solid silhouette (25x25 closing) so that the monitor, desk, chair, legs,
+    # and hands typing on the keyboard remain 100% full, solid, and intact.
+    # Then precisely removes the black background ONLY in the gap between the person
+    # and the front of the monitor (X: 370..412, Y < 420, where combined_mask == 0).
     orig_gif = Image.open(gif_path)
     bg = np.array([34, 27, 22], dtype=np.uint8) # BGR for OpenCV
     
@@ -34,26 +34,30 @@ def build_svg_cards():
         mask = np.any(diff > 5, axis=2).astype(np.uint8) * 255
         combined_mask = cv2.bitwise_or(combined_mask, mask)
     
-    # Connect character parts while keeping the gap between human and computer cleanly open
-    kernel = cv2.getStructuringElement(cv2.MORPH_RECT, (15, 25))
+    # Solid silhouette preserving full monitor rectangle, desk, chair, and hands
+    kernel = cv2.getStructuringElement(cv2.MORPH_RECT, (25, 25))
     closed = cv2.morphologyEx(combined_mask, cv2.MORPH_CLOSE, kernel)
     
-    # External contours only - guarantees NOTHING inside is punched out or removed!
     contours, _ = cv2.findContours(closed, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
     silhouette = np.zeros_like(combined_mask)
     for cnt in contours:
         if cv2.contourArea(cnt) > 500:
             cv2.drawContours(silhouette, [cnt], -1, 255, -1)
             
-    # Smooth edges
-    kernel_smooth = cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (5, 5))
+    kernel_smooth = cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (7, 7))
     silhouette = cv2.morphologyEx(silhouette, cv2.MORPH_CLOSE, kernel_smooth)
+    
+    # Precisely remove the black background ONLY in the gap between the person and the monitor
+    h_idx = np.arange(orig_gif.height)[:, None]
+    w_idx = np.arange(orig_gif.width)[None, :]
+    gap = (combined_mask == 0) & (w_idx >= 370) & (w_idx < 413) & (h_idx < 420)
+    silhouette[gap] = 0
     
     # Create white-background frames
     white_frames = []
     for bgr in frames_bgr:
         out_bgr = np.full_like(bgr, 255) # pure white
-        out_bgr[silhouette > 0] = bgr[silhouette > 0] # preserve original character details
+        out_bgr[silhouette > 0] = bgr[silhouette > 0] # preserve character and monitor details
         rgb_out = cv2.cvtColor(out_bgr, cv2.COLOR_BGR2RGB)
         white_frames.append(Image.fromarray(rgb_out))
         
@@ -186,7 +190,7 @@ text, tspan {{white-space: pre;}}
         f.write(dark_svg)
     with open(light_out, "w", encoding="utf-8") as f:
         f.write(light_svg)
-    print("SVGs successfully generated! Dark mode unchanged, Light mode has seamless animated GIF with zero black box.")
+    print("SVGs successfully generated! Monitor and character 100% intact, gap cleanly opened.")
 
 if __name__ == '__main__':
     build_svg_cards()
