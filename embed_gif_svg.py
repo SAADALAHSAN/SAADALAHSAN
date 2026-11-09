@@ -34,8 +34,8 @@ def build_svg_cards():
         mask = np.any(diff > 5, axis=2).astype(np.uint8) * 255
         combined_mask = cv2.bitwise_or(combined_mask, mask)
     
-    # Connect all parts into one solid silhouette
-    kernel = cv2.getStructuringElement(cv2.MORPH_RECT, (25, 25))
+    # Connect character parts while keeping the gap between human and computer cleanly open
+    kernel = cv2.getStructuringElement(cv2.MORPH_RECT, (15, 25))
     closed = cv2.morphologyEx(combined_mask, cv2.MORPH_CLOSE, kernel)
     
     # External contours only - guarantees NOTHING inside is punched out or removed!
@@ -46,7 +46,7 @@ def build_svg_cards():
             cv2.drawContours(silhouette, [cnt], -1, 255, -1)
             
     # Smooth edges
-    kernel_smooth = cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (7, 7))
+    kernel_smooth = cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (5, 5))
     silhouette = cv2.morphologyEx(silhouette, cv2.MORPH_CLOSE, kernel_smooth)
     
     # Create white-background frames
