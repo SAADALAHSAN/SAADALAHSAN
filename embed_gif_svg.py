@@ -14,13 +14,10 @@ def build_svg_cards():
     dark_b64 = base64.b64encode(dark_gif_bytes).decode("utf-8")
     dark_data_uri = f"data:image/gif;base64,{dark_b64}"
     
-    # 2. Light Mode: 5-frame animated GIF with pure white background
-    # Multi-component segmentation:
-    # - Person (X < 413): closed with tight 12x12 kernel for crisp hair, face, body, hands
-    # - Monitor screen (X >= 413, Y between 240 and 420): closed with 15x15 kernel for solid full screen
-    # - Desk & Stand (Y >= 420): closed with 5x5 kernel for crisp table and stand lines
-    # - Gap between human & monitor: naturally open white space!
-    # - Space under monitor & desk: naturally open white space!
+    # 2. Light Mode: 5-frame animated GIF with pure white background outside
+    # Uses commit 5069356 solid silhouette so that the desk, hands, keyboard, monitor,
+    # chair, and legs retain all of their original internal black background and details.
+    # ONLY removes the small vertical gap between the person's face and the monitor (Y: 240..400, X: 370..412).
     orig_gif = Image.open(gif_path)
     bg = np.array([34, 27, 22], dtype=np.uint8) # BGR for OpenCV
     
@@ -36,45 +33,30 @@ def build_svg_cards():
         mask = np.any(diff > 5, axis=2).astype(np.uint8) * 255
         combined_mask = cv2.bitwise_or(combined_mask, mask)
     
-    # Person silhouette (X < 413)
-    person_mask = combined_mask.copy()
-    person_mask[:, 413:] = 0
-    k_person = cv2.getStructuringElement(cv2.MORPH_RECT, (12, 12))
-    person_closed = cv2.morphologyEx(person_mask, cv2.MORPH_CLOSE, k_person)
-    cnts_p, _ = cv2.findContours(person_closed, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
-    person_sil = np.zeros_like(combined_mask)
-    for c in cnts_p:
-        if cv2.contourArea(c) > 200:
-            cv2.drawContours(person_sil, [c], -1, 255, -1)
-            
-    # Monitor screen silhouette (X >= 413, Y: 240..420)
-    monitor_sil = np.zeros_like(combined_mask)
-    mon_mask = combined_mask.copy()
-    mon_mask[:, :413] = 0
-    mon_mask[420:, :] = 0
-    k_mon = cv2.getStructuringElement(cv2.MORPH_RECT, (15, 15))
-    mon_closed = cv2.morphologyEx(mon_mask, cv2.MORPH_CLOSE, k_mon)
-    cnts_m, _ = cv2.findContours(mon_closed, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
-    for c in cnts_m:
-        if cv2.contourArea(c) > 500:
-            cv2.drawContours(monitor_sil, [c], -1, 255, -1)
-            
-    # Desk and monitor stand (Y >= 420)
-    rest_mask = combined_mask.copy()
-    rest_mask[:420, 413:] = 0
-    k_rest = cv2.getStructuringElement(cv2.MORPH_RECT, (5, 5))
-    rest_sil = cv2.morphologyEx(rest_mask, cv2.MORPH_CLOSE, k_rest)
-    rest_sil = cv2.bitwise_or(rest_sil, combined_mask)
+    # Solid silhouette preserving full monitor rectangle, desk, chair, and internal details
+    kernel = cv2.getStructuringElement(cv2.MORPH_RECT, (25, 25))
+    closed = cv2.morphologyEx(combined_mask, cv2.MORPH_CLOSE, kernel)
     
-    # Combine all components
-    final_sil = cv2.bitwise_or(person_sil, monitor_sil)
-    final_sil = cv2.bitwise_or(final_sil, rest_sil)
+    contours, _ = cv2.findContours(closed, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+    silhouette = np.zeros_like(combined_mask)
+    for cnt in contours:
+        if cv2.contourArea(cnt) > 500:
+            cv2.drawContours(silhouette, [cnt], -1, 255, -1)
+            
+    kernel_smooth = cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (7, 7))
+    silhouette = cv2.morphologyEx(silhouette, cv2.MORPH_CLOSE, kernel_smooth)
+    
+    # ONLY remove the black background in the gap between the person's face and the monitor
+    h_idx = np.arange(orig_gif.height)[:, None]
+    w_idx = np.arange(orig_gif.width)[None, :]
+    gap = (combined_mask == 0) & (w_idx >= 370) & (w_idx < 413) & (h_idx >= 240) & (h_idx < 400)
+    silhouette[gap] = 0
     
     # Create white-background frames
     white_frames = []
     for bgr in frames_bgr:
         out_bgr = np.full_like(bgr, 255) # pure white
-        out_bgr[final_sil > 0] = bgr[final_sil > 0] # preserve all character and monitor details
+        out_bgr[silhouette > 0] = bgr[silhouette > 0] # preserve all internal details
         rgb_out = cv2.cvtColor(out_bgr, cv2.COLOR_BGR2RGB)
         white_frames.append(Image.fromarray(rgb_out))
         
@@ -207,7 +189,7 @@ text, tspan {{white-space: pre;}}
         f.write(dark_svg)
     with open(light_out, "w", encoding="utf-8") as f:
         f.write(light_svg)
-    print("SVGs successfully generated with clean multi-component cutout!")
+    print("SVGs successfully generated! All internal details intact, gap cleanly opened.")
 
 if __name__ == '__main__':
     build_svg_cards()
