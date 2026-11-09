@@ -1,58 +1,84 @@
 import base64
 import os
-import cv2
-import numpy as np
+from collections import deque
+from PIL import Image
+
+def flood_fill_white(img_path):
+    """
+    Flood-fill from all edge pixels to replace ONLY the outer background
+    with white. Internal dark pixels (same color as bg but enclosed inside
+    the character) are preserved perfectly.
+    """
+    im = Image.open(img_path).convert("RGB")
+    w, h = im.size
+    pixels = im.load()
+    
+    # Background color: RGB(22, 27, 34) with tolerance of 8
+    bg_r, bg_g, bg_b = 22, 27, 34
+    tol = 8
+    
+    def is_bg(r, g, b):
+        return abs(r - bg_r) <= tol and abs(g - bg_g) <= tol and abs(b - bg_b) <= tol
+    
+    # BFS flood-fill from ALL edge pixels that match background
+    visited = set()
+    queue = deque()
+    
+    # Seed from all 4 edges
+    for x in range(w):
+        for y_edge in [0, h - 1]:
+            r, g, b = pixels[x, y_edge]
+            if is_bg(r, g, b) and (x, y_edge) not in visited:
+                queue.append((x, y_edge))
+                visited.add((x, y_edge))
+    for y in range(h):
+        for x_edge in [0, w - 1]:
+            r, g, b = pixels[x_edge, y]
+            if is_bg(r, g, b) and (x_edge, y) not in visited:
+                queue.append((x_edge, y))
+                visited.add((x_edge, y))
+    
+    # BFS
+    while queue:
+        cx, cy = queue.popleft()
+        for dx, dy in [(-1, 0), (1, 0), (0, -1), (0, 1)]:
+            nx, ny = cx + dx, cy + dy
+            if 0 <= nx < w and 0 <= ny < h and (nx, ny) not in visited:
+                r, g, b = pixels[nx, ny]
+                if is_bg(r, g, b):
+                    visited.add((nx, ny))
+                    queue.append((nx, ny))
+    
+    # Replace only the outer (visited) pixels with white
+    for (x, y) in visited:
+        pixels[x, y] = (255, 255, 255)
+    
+    print(f"Flood-fill complete: {len(visited)} outer bg pixels -> white")
+    return im
+
 
 def build_svg_cards():
     script_dir = os.path.dirname(os.path.abspath(__file__))
     gif_path = os.path.join(script_dir, "coding_sticker.gif")
     
-    # 1. Dark Mode: original GIF with dark background
+    # 1. Dark Mode: original GIF with dark background (unchanged)
     with open(gif_path, "rb") as f:
         dark_gif_bytes = f.read()
     dark_b64 = base64.b64encode(dark_gif_bytes).decode("utf-8")
     dark_data_uri = f"data:image/gif;base64,{dark_b64}"
     
-    # 2. Light Mode: Clean cutout of ONLY the character (no black box, no background)
-    im = cv2.imread(gif_path)
-    bg = np.array([34, 27, 22], dtype=np.uint8)
-
-    diff = np.abs(im.astype(int) - bg.astype(int))
-    mask = np.any(diff > 5, axis=2).astype(np.uint8) * 255
-
-    kernel = cv2.getStructuringElement(cv2.MORPH_RECT, (12, 12))
-    closed = cv2.morphologyEx(mask, cv2.MORPH_CLOSE, kernel)
-
-    contours, hierarchy = cv2.findContours(closed, cv2.RETR_CCOMP, cv2.CHAIN_APPROX_SIMPLE)
-    filled_mask = np.zeros_like(mask)
-
-    for i, cnt in enumerate(contours):
-        if cv2.contourArea(cnt) > 200:
-            if hierarchy[0][i][3] == -1:
-                cv2.drawContours(filled_mask, [cnt], -1, 255, -1)
-            else:
-                if cv2.contourArea(cnt) > 2000:
-                    cv2.drawContours(filled_mask, [cnt], -1, 0, -1)
-
-    kernel_dilate = cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (5, 5))
-    filled_mask = cv2.dilate(filled_mask, kernel_dilate)
-
-    smooth_mask = cv2.GaussianBlur(filled_mask, (5, 5), 0)
-
-    out_rgba = np.zeros((im.shape[0], im.shape[1], 4), dtype=np.uint8)
-    out_rgba[:, :, :3] = im
-    out_rgba[:, :, 3] = smooth_mask
-
-    cutout_path = os.path.join(script_dir, "character_cutout.png")
-    cv2.imwrite(cutout_path, out_rgba)
-
-    with open(cutout_path, "rb") as f:
-        cutout_b64 = base64.b64encode(f.read()).decode("utf-8")
-    cutout_data_uri = f"data:image/png;base64,{cutout_b64}"
-
-    # SVG Dimensions: width 985px, height 530px
-    # Left side GIF: x="15" y="60" width="390" height="390"
-    # Right side Text: x="415" y="35"
+    # 2. Light Mode: Flood-fill outer bg -> white, keep character intact
+    light_img = flood_fill_white(gif_path)
+    
+    # Save as PNG for embedding
+    light_path = os.path.join(script_dir, "coding_sticker_light.png")
+    light_img.save(light_path, "PNG")
+    
+    with open(light_path, "rb") as f:
+        light_b64 = base64.b64encode(f.read()).decode("utf-8")
+    light_data_uri = f"data:image/png;base64,{light_b64}"
+    
+    print(f"Light mode image saved: {light_path}")
     
     # --- DARK MODE SVG ---
     dark_svg = f"""<?xml version='1.0' encoding='UTF-8'?>
@@ -126,8 +152,8 @@ text, tspan {{white-space: pre;}}
 <!-- Light Mode Card Background with subtle GitHub border -->
 <rect width="985px" height="530px" fill="#ffffff" stroke="#d0d7de" stroke-width="2" rx="15"/>
 
-<!-- Transparent Cutout Coder (NO black box, NO background rectangle) -->
-<image href="{cutout_data_uri}" xlink:href="{cutout_data_uri}" x="15" y="60" width="390" height="390" preserveAspectRatio="xMidYMid meet" />
+<!-- Coder character with white bg (flood-filled, all internal details intact) -->
+<image href="{light_data_uri}" xlink:href="{light_data_uri}" x="15" y="60" width="390" height="390" preserveAspectRatio="xMidYMid meet" />
 
 <!-- Terminal Profile Details on Right Side -->
 <text x="415" y="35" fill="#24292f">
@@ -165,7 +191,7 @@ text, tspan {{white-space: pre;}}
         f.write(dark_svg)
     with open(light_out, "w", encoding="utf-8") as f:
         f.write(light_svg)
-    print("SVGs successfully generated with clean character cutout!")
+    print("SVGs successfully generated! Character intact with flood-fill approach.")
 
 if __name__ == '__main__':
     build_svg_cards()
