@@ -1,17 +1,80 @@
 import base64
 import os
+import cv2
+import numpy as np
+from PIL import Image, ImageSequence
 
 def build_svg_cards():
     script_dir = os.path.dirname(os.path.abspath(__file__))
     gif_path = os.path.join(script_dir, "coding_sticker.gif")
     
-    # Read original GIF (used for BOTH dark and light mode - NO modification)
+    # 1. Dark Mode: original GIF with dark background (unchanged)
     with open(gif_path, "rb") as f:
-        gif_bytes = f.read()
-    gif_b64 = base64.b64encode(gif_bytes).decode("utf-8")
-    gif_data_uri = f"data:image/gif;base64,{gif_b64}"
+        dark_gif_bytes = f.read()
+    dark_b64 = base64.b64encode(dark_gif_bytes).decode("utf-8")
+    dark_data_uri = f"data:image/gif;base64,{dark_b64}"
     
-    # --- DARK MODE SVG (unchanged) ---
+    # 2. Light Mode: Generate 5-frame animated GIF with pure white background outside silhouette
+    # The silhouette tightly hugs the character, monitor, desk, chair, and legs.
+    # Everything inside the silhouette (including ASCII text, animations, and monitor details)
+    # is 100% preserved. Outside the silhouette is pure white (#ffffff), seamlessly blending
+    # into the white card background with NO black box and NO container.
+    orig_gif = Image.open(gif_path)
+    bg = np.array([34, 27, 22], dtype=np.uint8) # BGR for OpenCV
+    
+    combined_mask = np.zeros((orig_gif.height, orig_gif.width), dtype=np.uint8)
+    frames_bgr = []
+    
+    for frame in ImageSequence.Iterator(orig_gif):
+        rgb_arr = np.array(frame.convert("RGB"))
+        bgr_arr = cv2.cvtColor(rgb_arr, cv2.COLOR_RGB2BGR)
+        frames_bgr.append(bgr_arr)
+        
+        diff = np.abs(bgr_arr.astype(int) - bg.astype(int))
+        mask = np.any(diff > 5, axis=2).astype(np.uint8) * 255
+        combined_mask = cv2.bitwise_or(combined_mask, mask)
+    
+    # Connect all parts into one solid silhouette
+    kernel = cv2.getStructuringElement(cv2.MORPH_RECT, (25, 25))
+    closed = cv2.morphologyEx(combined_mask, cv2.MORPH_CLOSE, kernel)
+    
+    # External contours only - guarantees NOTHING inside is punched out or removed!
+    contours, _ = cv2.findContours(closed, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+    silhouette = np.zeros_like(combined_mask)
+    for cnt in contours:
+        if cv2.contourArea(cnt) > 500:
+            cv2.drawContours(silhouette, [cnt], -1, 255, -1)
+            
+    # Smooth edges
+    kernel_smooth = cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (7, 7))
+    silhouette = cv2.morphologyEx(silhouette, cv2.MORPH_CLOSE, kernel_smooth)
+    
+    # Create white-background frames
+    white_frames = []
+    for bgr in frames_bgr:
+        out_bgr = np.full_like(bgr, 255) # pure white
+        out_bgr[silhouette > 0] = bgr[silhouette > 0] # preserve original character details
+        rgb_out = cv2.cvtColor(out_bgr, cv2.COLOR_BGR2RGB)
+        white_frames.append(Image.fromarray(rgb_out))
+        
+    # Save as 5-frame animated GIF
+    light_gif_path = os.path.join(script_dir, "coding_sticker_light.gif")
+    white_frames[0].save(
+        light_gif_path,
+        save_all=True,
+        append_images=white_frames[1:],
+        duration=orig_gif.info.get("duration", 90),
+        loop=0
+    )
+    
+    with open(light_gif_path, "rb") as f:
+        light_gif_bytes = f.read()
+    light_b64 = base64.b64encode(light_gif_bytes).decode("utf-8")
+    light_data_uri = f"data:image/gif;base64,{light_b64}"
+    
+    print(f"Generated light animated GIF: {light_gif_path} ({len(light_gif_bytes)/1024:.1f} KB)")
+    
+    # --- DARK MODE SVG ---
     dark_svg = f"""<?xml version='1.0' encoding='UTF-8'?>
 <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" font-family="ConsolasFallback,Consolas,monospace" width="985px" height="530px" font-size="14.5px">
 <style>
@@ -32,7 +95,7 @@ text, tspan {{white-space: pre;}}
 <rect width="985px" height="530px" fill="#161b22" rx="15"/>
 
 <!-- Animated ASCII Coding GIF Sticker on Left Side -->
-<image href="{gif_data_uri}" xlink:href="{gif_data_uri}" x="15" y="60" width="390" height="390" preserveAspectRatio="xMidYMid meet" />
+<image href="{dark_data_uri}" xlink:href="{dark_data_uri}" x="15" y="60" width="390" height="390" preserveAspectRatio="xMidYMid meet" />
 
 <!-- Terminal Profile Details on Right Side -->
 <text x="415" y="35" fill="#c9d1d9">
@@ -61,9 +124,7 @@ text, tspan {{white-space: pre;}}
 """
 
     # --- LIGHT MODE SVG ---
-    # Original GIF untouched, sitting in a rounded dark container on white card
-    # The dark container matches the GIF bg so the character blends perfectly
-    # It looks like a terminal/code window embedded in the white card
+    # Pure white card background. Animated character with NO black box, NO dark rect.
     light_svg = f"""<?xml version='1.0' encoding='UTF-8'?>
 <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" font-family="ConsolasFallback,Consolas,monospace" width="985px" height="530px" font-size="14.5px">
 <style>
@@ -83,14 +144,11 @@ size-adjust: 109%;
 text, tspan {{white-space: pre;}}
 </style>
 
-<!-- White card background -->
-<rect width="985px" height="530px" fill="#ffffff" stroke="#d0d7de" stroke-width="1" rx="15"/>
+<!-- Light Mode Card Background with subtle GitHub border -->
+<rect width="985px" height="530px" fill="#ffffff" stroke="#d0d7de" stroke-width="2" rx="15"/>
 
-<!-- Dark rounded container for the character GIF (matches GIF bg perfectly) -->
-<rect x="20" y="55" width="380" height="400" fill="#161b22" rx="12"/>
-
-<!-- Original GIF sitting perfectly inside the dark container -->
-<image href="{gif_data_uri}" xlink:href="{gif_data_uri}" x="15" y="60" width="390" height="390" preserveAspectRatio="xMidYMid meet" />
+<!-- Animated Coding Character (Seamless on white, NO black box, all internal details intact) -->
+<image href="{light_data_uri}" xlink:href="{light_data_uri}" x="15" y="60" width="390" height="390" preserveAspectRatio="xMidYMid meet" />
 
 <!-- Terminal Profile Details on Right Side -->
 <text x="415" y="35" fill="#24292f">
@@ -128,7 +186,7 @@ text, tspan {{white-space: pre;}}
         f.write(dark_svg)
     with open(light_out, "w", encoding="utf-8") as f:
         f.write(light_svg)
-    print("SVGs generated! Original GIF used for both modes.")
+    print("SVGs successfully generated! Dark mode unchanged, Light mode has seamless animated GIF with zero black box.")
 
 if __name__ == '__main__':
     build_svg_cards()
