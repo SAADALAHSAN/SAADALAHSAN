@@ -45,22 +45,24 @@ def build_svg_cards():
     kernel_smooth = cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (7, 7))
     silhouette = cv2.morphologyEx(silhouette, cv2.MORPH_CLOSE, kernel_smooth)
     
-    # Cleanly remove background in open air regions while preserving character solids:
+    # Cleanly remove background in open air regions while strictly preserving character solids:
     h_idx = np.arange(orig_gif.height)[:, None]
     w_idx = np.arange(orig_gif.width)[None, :]
     
-    # 1. Gap between face and monitor screen (Y: 240..425, X: 374..413)
-    gap_face = (combined_mask == 0) & (w_idx >= 374) & (w_idx < 413) & (h_idx >= 240) & (h_idx <= 425)
+    # 1. Gap between face and monitor screen (Y: 240..425, X: 394..413)
+    # Right eye ends at X=393, monitor starts at X=413. Using w_idx >= 394 protects both eyes completely!
+    gap_face = (combined_mask == 0) & (w_idx >= 394) & (w_idx < 413) & (h_idx >= 240) & (h_idx <= 425)
     silhouette[gap_face] = 0
     
-    # 2. Under monitor screen (Y: 420..476, to the left and right of the monitor stand)
-    # The monitor stand is at X: 570..610.
+    # 2. Under monitor screen (Y: 420..470, X: 394..740 except monitor stand X: 570..610)
+    # Protects the hands (X < 394) and the table surface (Y >= 475)!
     stand_region = (w_idx >= 570) & (w_idx <= 610)
-    under_monitor_air = (combined_mask == 0) & (h_idx >= 420) & (h_idx <= 476) & (w_idx >= 380) & (w_idx <= 740) & ~stand_region
+    under_monitor_air = (combined_mask == 0) & (h_idx >= 420) & (h_idx <= 470) & (w_idx >= 394) & (w_idx <= 740) & ~stand_region
     silhouette[under_monitor_air] = 0
     
-    # 3. Below the desk (Y >= 520) - between legs, chair leg, desk leg
-    legs_air = (combined_mask == 0) & (h_idx >= 520)
+    # 3. Below the desk (Y >= 570) - between legs, chair leg, desk leg
+    # Table surface extends down to Y=565. Starting at Y >= 570 protects the table 100%!
+    legs_air = (combined_mask == 0) & (h_idx >= 570)
     silhouette[legs_air] = 0
     
     # Create white-background frames
@@ -194,6 +196,7 @@ text, tspan {{white-space: pre;}}
     light_out = os.path.join(script_dir, "profile_card_light.svg")
     light_v3_out = os.path.join(script_dir, "profile_card_light_v3.svg")
     light_v4_out = os.path.join(script_dir, "profile_card_light_v4.svg")
+    light_v5_out = os.path.join(script_dir, "profile_card_light_v5.svg")
     dark_copy = os.path.join(script_dir, "dark_mode.svg")
     
     with open(dark_out, "w", encoding="utf-8") as f:
@@ -206,7 +209,9 @@ text, tspan {{white-space: pre;}}
         f.write(light_svg)
     with open(light_v4_out, "w", encoding="utf-8") as f:
         f.write(light_svg)
-    print("SVGs successfully generated! Both profile_card_light.svg, v3, and v4 written.")
+    with open(light_v5_out, "w", encoding="utf-8") as f:
+        f.write(light_svg)
+    print("SVGs successfully generated! profile_card_light.svg, v3, v4, and v5 written.")
 
 if __name__ == '__main__':
     build_svg_cards()
